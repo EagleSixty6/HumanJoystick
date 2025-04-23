@@ -92,10 +92,11 @@ public class HumanJoystickTranslation : MonoBehaviour
         _tiltingDirectionLocal = diff.normalized;
         
         // clamp body tilt to an axis
-        _velocityAxis = Mathf.Clamp(_velocityAxis / _bodyOffsetForMaxSpeed, 0, 1);
-        
+        _velocityAxis = Mathf.Clamp01(_velocityAxis / _bodyOffsetForMaxSpeed);
+
         // apply transform function
-        float transformFunc = Mathf.Pow(Mathf.Max(0, _velocityAxis - _deadzone) * _transferSensitivity, _exponentialTransferFunctionPower) * _transferFactor;
+        float adjustedInput = Mathf.Clamp01((_velocityAxis - _deadzone) / (1f - _deadzone));
+        float transformFunc = Mathf.Pow(adjustedInput * _transferSensitivity, _exponentialTransferFunctionPower) * _transferFactor;
         
         _velocityAxis = _velocityAxis * transformFunc;
     }
